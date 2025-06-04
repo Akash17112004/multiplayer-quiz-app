@@ -125,6 +125,18 @@ Runs at [http://localhost:3000](http://localhost:3000)
 - Built with ❤️ using open-source tools.
 
 ---
+## Preview
+1.Login Page
+![Screenshot 2025-06-04 215220](https://github.com/user-attachments/assets/0827d5cd-47b3-43a2-84b6-5a0361fdb207)
+2.Players's Lobby
+![Screenshot 2025-06-04 215254](https://github.com/user-attachments/assets/a4d85a64-0ec2-491d-8b07-937ec097e74c)
+3.Questions's View
+![Screenshot 2025-06-04 215311](https://github.com/user-attachments/assets/5b819195-d330-4325-bb94-8bc90c530237)
+4.LeaderBoard
+![Screenshot 2025-06-04 215422](https://github.com/user-attachments/assets/ac7433d0-adb2-46af-bd08-fa19bfb7e360)
+
+
+
 
 ## 📝 License
 
