@@ -1,4 +1,3 @@
-// server/index.js
 
 const express = require('express');
 const http = require('http');
@@ -7,7 +6,6 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-// Allow CORS from your React dev server
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
@@ -101,7 +99,6 @@ io.on('connection', socket => {
       socket.emit('you-are-host');
     }
 
-    // Join the Socket.IO room and add to players list
     socket.join(pin);
     room.players[socket.id] = { name, score: 0, answered: false };
 
@@ -127,13 +124,11 @@ io.on('connection', socket => {
 
     console.log(`🏁 [server] Host ${socket.id} is starting the game`);
     room.currentQuestionIndex = 0;
-    // Reset all scores & answered flags
     Object.values(room.players).forEach(p => {
       p.score = 0;
       p.answered = false;
     });
 
-    // Emit the first question
     const firstQ = QUESTIONS[0];
     console.log('    ↪️ [server] Emitting new-question:', firstQ);
     io.to(pin).emit('new-question', {
@@ -159,14 +154,12 @@ io.on('connection', socket => {
       return;
     }
 
-    // Find the question by ID
     const question = QUESTIONS.find(q => q.id === questionId);
     if (!question) {
       console.log(`↪️ [server] No question with id=${questionId}`);
       return;
     }
 
-    // Award 10 points if correct
     if (selectedIndex === question.correctIndex) {
       player.score += 10;
       console.log(`↪️ [server] Correct answer! ${player.name} now has ${player.score} pts`);
@@ -174,19 +167,15 @@ io.on('connection', socket => {
       console.log(`↪️ [server] Incorrect answer by ${player.name}`);
     }
 
-    // Mark that this player has answered
     player.answered = true;
 
-    // Check if all players in this room have answered
     const allAnswered = Object.values(room.players).every(p => p.answered);
     console.log(`↪️ [server] allAnswered = ${allAnswered} for room ${pin}`);
 
     if (!allAnswered) {
-      // If even one player hasn’t answered yet, wait
       return;
     }
 
-    // Everyone answered → build leaderboard
     const leaderboard = Object.values(room.players)
       .map(p => ({ name: p.name, score: p.score }))
       .sort((a, b) => b.score - a.score);
@@ -194,12 +183,10 @@ io.on('connection', socket => {
     console.log(`↪️ [server] Emitting show-leaderboard:`, leaderboard);
     io.to(pin).emit('show-leaderboard', leaderboard);
 
-    // Reset answered flags for next question
     Object.values(room.players).forEach(p => {
       p.answered = false;
     });
 
-    // After 5 seconds, send the next question or game-over
     setTimeout(() => {
       room.currentQuestionIndex += 1;
       if (room.currentQuestionIndex < QUESTIONS.length) {
@@ -226,10 +213,8 @@ io.on('connection', socket => {
       return;
     }
 
-    // Remove that player
     delete room.players[socket.id];
 
-    // If that socket was host, reassign new host
     if (room.host === socket.id) {
       const remaining = Object.keys(room.players);
       room.host = remaining.length > 0 ? remaining[0] : null;
@@ -241,17 +226,14 @@ io.on('connection', socket => {
       }
     }
 
-    // Broadcast updated player list
     const remainingNames = Object.values(room.players).map(p => p.name);
     io.to(GAME_PIN).emit('update-players', remainingNames);
     console.log(`↪️ [server] After disconnect, players:`, remainingNames);
 
-    // If the game is in progress, re-check allAnswered
     if (room.currentQuestionIndex > 0) {
       const allAnswered = Object.values(room.players).every(p => p.answered);
       console.log(`↪️ [server] After disconnect, allAnswered = ${allAnswered}`);
       if (allAnswered) {
-        // Build leaderboard again
         const leaderboard = Object.values(room.players)
           .map(p => ({ name: p.name, score: p.score }))
           .sort((a, b) => b.score - a.score);
@@ -259,10 +241,8 @@ io.on('connection', socket => {
         console.log(`↪️ [server] Emitting show-leaderboard (post-disconnect):`, leaderboard);
         io.to(GAME_PIN).emit('show-leaderboard', leaderboard);
 
-        // Reset answered flags
         Object.values(room.players).forEach(p => (p.answered = false));
 
-        // After 5s, next question or game-over
         setTimeout(() => {
           room.currentQuestionIndex += 1;
           if (room.currentQuestionIndex < QUESTIONS.length) {
