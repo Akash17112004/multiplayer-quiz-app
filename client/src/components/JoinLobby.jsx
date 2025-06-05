@@ -1,7 +1,7 @@
-// client/src/components/JoinLobby.jsx
+
 import React, { useState, useEffect } from 'react';
 import { socket } from '../socket';
-import '../index.css'; // Make sure CSS is imported
+import '../index.css'; 
 
 export default function JoinLobby({ onJoin, joinedPin }) {
   const [name, setName] = useState('');
